@@ -4,7 +4,7 @@
 
 ## Milestone 1：离线 Vault 基础
 
-状态：**In progress**；ADR-0005 已于 2026-09-20 获批。
+状态：**Blocked by ADR-0006 approval**；ADR-0005 已获批，但其 sodium 版本与锁定 Dart SDK 不兼容。
 
 交付顺序：
 
