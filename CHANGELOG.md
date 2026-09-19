@@ -1,0 +1,19 @@
+# Changelog
+
+遵循 Keep a Changelog 与语义化版本。
+
+## [Unreleased]
+
+### Added
+- 分层实施计划与首个未完成 Milestone 验收范围。
+- Proposed ADR-0005，用于审批 Milestone 1 的密码学与加密索引依赖。
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [0.0.0] - YYYY-MM-DD
+
+### Added
+- 仓库级文档基线。
