@@ -4,7 +4,7 @@
 
 ## Milestone 1：离线 Vault 基础
 
-状态：**In progress**；ADR-0005、ADR-0006 与 ADR-0007 已于 2026-09-20 获批。
+状态：**Blocked by ADR-0008 approval**；sodium Windows builder 的 vswhere 输出编码缺陷阻止 native-assets 构建。
 
 交付顺序：
 

@@ -9,6 +9,7 @@
 - Proposed ADR-0005，用于审批 Milestone 1 的密码学与加密索引依赖。
 - Proposed ADR-0006，用于解决 sodium 与锁定 Dart SDK 的版本不兼容。
 - Proposed ADR-0007，用于解决 sodium 与 SQLCipher 原生构建钩子冲突。
+- Proposed ADR-0008，用于修复 sodium 在中文 Windows 上解析 vswhere 输出失败。
 ### Changed
 ### Deprecated
 ### Removed
