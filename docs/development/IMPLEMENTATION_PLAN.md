@@ -4,7 +4,7 @@
 
 ## Milestone 1：离线 Vault 基础
 
-状态：**Blocked by ADR-0005 approval**。
+状态：**In progress**；ADR-0005 已于 2026-09-20 获批。
 
 交付顺序：
 
