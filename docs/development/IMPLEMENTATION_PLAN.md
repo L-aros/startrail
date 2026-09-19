@@ -4,7 +4,7 @@
 
 ## Milestone 1：离线 Vault 基础
 
-状态：**Blocked by ADR-0007 approval**；已批准依赖的 native hooks 主版本互斥。
+状态：**In progress**；ADR-0005、ADR-0006 与 ADR-0007 已于 2026-09-20 获批。
 
 交付顺序：
 

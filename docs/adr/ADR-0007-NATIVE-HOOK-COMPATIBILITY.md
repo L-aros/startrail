@@ -1,6 +1,6 @@
 # ADR-0007：Sodium 与 SQLCipher 构建钩子兼容基线
 
-状态：**Proposed**；日期：2026-09-20。
+状态：**Accepted**；日期：2026-09-20。
 
 ## 背景
 
