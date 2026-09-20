@@ -4,7 +4,7 @@
 
 ## Milestone 1：离线 Vault 基础
 
-状态：**In progress**；密码学原语、对象 envelope、Vault Header v1 与 VMK 包装已完成。Windows 最终构建仍等待 ADR-0008 决策。
+状态：**Blocked by ADR-0010 approval**；创建事务所需的初始 Manifest digest 与 HEAD v1 精确编码需审批后实现。Windows 最终构建仍等待 ADR-0008 决策。
 
 交付顺序：
 
