@@ -1,6 +1,6 @@
 # ADR-0009：Vault Header v1 二进制编码
 
-- 状态：Proposed
+- 状态：Accepted
 - 日期：2026-09-20
 - 决策范围：已发布 Vault 格式、密码学元数据编码
 
