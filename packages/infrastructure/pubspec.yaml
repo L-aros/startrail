@@ -27,6 +27,7 @@ hooks:
     sqlite3:
       source: source
       path: ../../third_party/sqlcipher/sqlcipher_amalgamation.c
+      startrail_bundled_openssl_root: ../../third_party/sqlcipher/openssl
       additional_includes:
         - ../../third_party/sqlcipher
       additional_libraries:

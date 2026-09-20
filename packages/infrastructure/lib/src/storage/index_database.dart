@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
@@ -33,6 +34,8 @@ final class IndexKeyDeriver {
   );
 }
 
+typedef IndexDatabasePopulator = FutureOr<void> Function(Database database);
+
 final class EncryptedIndexDatabase {
   EncryptedIndexDatabase(this.database, this._indexKey);
 
@@ -57,20 +60,24 @@ final class IndexDatabaseFactory {
     required DirectoryDurability durability,
     SqlCipherRawKeyAdapter rawKeyAdapter = const SqlCipherRawKeyAdapter(),
     Random? random,
+    DateTime Function()? clock,
   }) : _keyDeriver = IndexKeyDeriver(sodium),
        _durability = durability,
        _rawKeyAdapter = rawKeyAdapter,
-       _random = random ?? Random.secure();
+       _random = random ?? Random.secure(),
+       _clock = clock ?? DateTime.now;
 
   final IndexKeyDeriver _keyDeriver;
   final DirectoryDurability _durability;
   final SqlCipherRawKeyAdapter _rawKeyAdapter;
   final Random _random;
+  final DateTime Function() _clock;
 
   Future<EncryptedIndexDatabase> create(
     String path, {
     required SecureKey masterKey,
     required String manifestId,
+    IndexDatabasePopulator? populate,
   }) async {
     _validateManifestId(manifestId);
     final target = File(path);
@@ -87,6 +94,7 @@ final class IndexDatabaseFactory {
       created = _openConnection(temporary.path, masterKey);
       _configureConnection(created.database);
       _createSchema(created.database, manifestId);
+      if (populate != null) await _populate(created.database, populate);
       created.close();
       created = null;
 
@@ -107,26 +115,66 @@ final class IndexDatabaseFactory {
     }
   }
 
+  Future<EncryptedIndexDatabase> openOrRebuild(
+    String path, {
+    required SecureKey masterKey,
+    required String manifestId,
+    required IndexDatabasePopulator populate,
+  }) async {
+    final target = File(path);
+    if (!await target.exists()) {
+      return create(
+        path,
+        masterKey: masterKey,
+        manifestId: manifestId,
+        populate: populate,
+      );
+    }
+
+    try {
+      return open(path, masterKey: masterKey, manifestId: manifestId);
+    } catch (_) {
+      await _quarantineDatabaseGroup(path);
+      return create(
+        path,
+        masterKey: masterKey,
+        manifestId: manifestId,
+        populate: populate,
+      );
+    }
+  }
+
   EncryptedIndexDatabase open(
     String path, {
     required SecureKey masterKey,
     required String manifestId,
   }) {
     _validateManifestId(manifestId);
-    final opened = _openConnection(path, masterKey);
+    final validation = _openConnection(
+      path,
+      masterKey,
+      mode: OpenMode.readOnly,
+    );
     try {
-      _configureConnection(opened.database);
-      _validateIntegrity(opened.database);
-      if (opened.database.userVersion != indexSchemaVersion ||
-          _pragmaInt(opened.database, 'application_id') != indexApplicationId) {
+      _validateIntegrity(validation.database);
+      if (validation.database.userVersion != indexSchemaVersion ||
+          _pragmaInt(validation.database, 'application_id') !=
+              indexApplicationId) {
         throw const FormatException('Unsupported index schema');
       }
-      final rows = opened.database.select(
+      final rows = validation.database.select(
         'SELECT manifest_id FROM index_meta WHERE singleton = 1',
       );
       if (rows.length != 1 || rows.single['manifest_id'] != manifestId) {
         throw const IndexGenerationMismatch();
       }
+    } finally {
+      validation.close();
+    }
+
+    final opened = _openConnection(path, masterKey, mode: OpenMode.readWrite);
+    try {
+      _configureConnection(opened.database);
       return opened;
     } catch (_) {
       opened.close();
@@ -134,11 +182,15 @@ final class IndexDatabaseFactory {
     }
   }
 
-  EncryptedIndexDatabase _openConnection(String path, SecureKey masterKey) {
+  EncryptedIndexDatabase _openConnection(
+    String path,
+    SecureKey masterKey, {
+    OpenMode mode = OpenMode.readWriteCreate,
+  }) {
     final indexKey = _keyDeriver.derive(masterKey);
     try {
       final database = indexKey.runUnlockedSync(
-        (bytes) => _rawKeyAdapter.open(path, rawKey: bytes),
+        (bytes) => _rawKeyAdapter.open(path, rawKey: bytes, mode: mode),
       );
       return EncryptedIndexDatabase(database, indexKey);
     } catch (_) {
@@ -175,6 +227,20 @@ final class IndexDatabaseFactory {
     }
   }
 
+  Future<void> _populate(
+    Database database,
+    IndexDatabasePopulator populate,
+  ) async {
+    database.execute('BEGIN IMMEDIATE');
+    try {
+      await populate(database);
+      database.execute('COMMIT');
+    } catch (_) {
+      if (!database.autocommit) database.execute('ROLLBACK');
+      rethrow;
+    }
+  }
+
   void _validateIntegrity(Database database) {
     final cipher = database.select('PRAGMA cipher_integrity_check');
     if (cipher.isNotEmpty &&
@@ -197,6 +263,41 @@ final class IndexDatabaseFactory {
     if (!RegExp(r'^[a-z2-7]{52}$').hasMatch(manifestId)) {
       throw const FormatException('Invalid manifest id');
     }
+  }
+
+  Future<void> _quarantineDatabaseGroup(String path) async {
+    final target = File(path);
+    final localDirectory = target.parent;
+    final quarantineRoot = Directory(
+      '${localDirectory.path}${Platform.pathSeparator}quarantine',
+    );
+    if (!await quarantineRoot.exists()) {
+      await quarantineRoot.create();
+      await _durability.syncDirectory(localDirectory);
+    }
+    final timestamp = _clock()
+        .toUtc()
+        .toIso8601String()
+        .replaceAll(':', '')
+        .replaceAll('.', '');
+    final destination = Directory(
+      '${quarantineRoot.path}${Platform.pathSeparator}'
+      '$timestamp-${_randomSuffix()}',
+    );
+    await destination.create();
+    await _durability.syncDirectory(quarantineRoot);
+
+    for (final suffix in ['', '-wal', '-shm']) {
+      final source = File('$path$suffix');
+      if (await source.exists()) {
+        await source.rename(
+          '${destination.path}${Platform.pathSeparator}'
+          '${target.uri.pathSegments.last}$suffix',
+        );
+      }
+    }
+    await _durability.syncDirectory(destination);
+    await _durability.syncDirectory(localDirectory);
   }
 
   Future<void> _deleteDatabaseGroup(String path) async {

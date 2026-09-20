@@ -32,10 +32,23 @@ void main() {
     const fixtureText = 'fixture-search-plaintext-must-not-leak';
 
     final created = adapter.open(databasePath, rawKey: key);
-    created
-      ..execute('CREATE TABLE fixture (value TEXT NOT NULL)')
-      ..execute('INSERT INTO fixture VALUES (?)', [fixtureText])
-      ..close();
+    expect(
+      created.select('PRAGMA cipher_version').single.values.single,
+      isNotEmpty,
+    );
+    created.execute('PRAGMA journal_mode = WAL');
+    created.execute('CREATE TABLE fixture (value TEXT NOT NULL)');
+    created.execute('INSERT INTO fixture VALUES (?)', [fixtureText]);
+
+    for (final suffix in ['', '-wal', '-shm']) {
+      final file = File('$databasePath$suffix');
+      if (!file.existsSync()) continue;
+      final bytes = file.readAsBytesSync();
+      expect(_contains(bytes, utf8.encode(fixtureText)), isFalse);
+      expect(_contains(bytes, key), isFalse);
+      expect(_contains(bytes, utf8.encode(_hex(key))), isFalse);
+    }
+    created.close();
 
     final reopened = adapter.open(databasePath, rawKey: key);
     addTearDown(reopened.close);
@@ -43,11 +56,6 @@ void main() {
       reopened.select('SELECT value FROM fixture').single['value'],
       fixtureText,
     );
-
-    final bytes = File(databasePath).readAsBytesSync();
-    expect(_contains(bytes, utf8.encode(fixtureText)), isFalse);
-    expect(_contains(bytes, key), isFalse);
-    expect(_contains(bytes, utf8.encode(_hex(key))), isFalse);
   });
 
   test('wrong raw key cannot read the schema', () {

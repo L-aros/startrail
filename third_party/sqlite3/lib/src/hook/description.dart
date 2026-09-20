@@ -42,22 +42,45 @@ sealed class SqliteBinary {
       case 'executable':
         return SimpleBinary.fromExecutable;
       case 'source':
+        final targetOS = input.config.code.targetOS;
+        final bundledOpenSslRoot = userDefines.path(
+          'startrail_bundled_openssl_root',
+        );
+        final useBundledOpenSsl =
+            targetOS == OS.android || targetOS == OS.windows;
+        final bundledOpenSslDirectory =
+            bundledOpenSslRoot == null || !useBundledOpenSsl
+            ? null
+            : p.join(
+                bundledOpenSslRoot.toFilePath(),
+                '${targetOS.name}-${input.config.code.targetArchitecture.name}',
+              );
+
         return CompileSqlite(
           sourceFile: userDefines.path('path')!.toFilePath(),
           defines: CompilerDefines.parse(
             userDefines,
             input.config.code.targetOS,
           ),
-          additionalIncludes:
-              (userDefines['additional_includes'] as List?)?.cast() ?? const [],
+          additionalIncludes: [
+            ...?((userDefines['additional_includes'] as List?)?.cast<String>()),
+            if (bundledOpenSslDirectory != null)
+              p.join(bundledOpenSslDirectory, 'include'),
+          ],
           additionalFlags:
               (userDefines['additional_flags'] as List?)?.cast() ?? const [],
-          additionalLibraryDirectories:
-              (userDefines['additional_lib_directories'] as List?)?.cast() ??
-              const [],
-          additionalLibraries:
-              (userDefines['additional_libraries'] as List?)?.cast() ??
-              const [],
+          additionalLibraryDirectories: [
+            ...?((userDefines['additional_lib_directories'] as List?)
+                ?.cast<String>()),
+            if (bundledOpenSslDirectory != null)
+              p.join(bundledOpenSslDirectory, 'lib'),
+          ],
+          additionalLibraries: [
+            ...?((userDefines['additional_libraries'] as List?)
+                ?.cast<String>()),
+            if (bundledOpenSslDirectory != null && targetOS == OS.android)
+              'log',
+          ],
         );
       default:
         throw ArgumentError.value(

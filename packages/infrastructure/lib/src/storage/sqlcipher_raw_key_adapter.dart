@@ -6,12 +6,16 @@ import 'package:sqlite3/sqlite3.dart';
 final class SqlCipherRawKeyAdapter {
   const SqlCipherRawKeyAdapter();
 
-  Database open(String path, {required Uint8List rawKey}) {
+  Database open(
+    String path, {
+    required Uint8List rawKey,
+    OpenMode mode = OpenMode.readWriteCreate,
+  }) {
     if (rawKey.length != 32) {
       throw ArgumentError.value(rawKey.length, 'rawKey.length', 'must be 32');
     }
 
-    final database = sqlite3.open(path);
+    final database = sqlite3.open(path, mode: mode);
     try {
       database.applySqlCipherRawKey(rawKey);
       database.execute('PRAGMA cipher_memory_security = ON');

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:infrastructure/infrastructure.dart';
@@ -115,7 +116,112 @@ void main() {
       );
     },
   );
+
+  test('open failure quarantines the database group and rebuilds', () async {
+    final local = Directory('${sandbox.path}/local')..createSync();
+    final path = '${local.path}/index.db';
+    final factory = IndexDatabaseFactory(
+      sodium,
+      durability: PosixDirectoryDurability(),
+      random: _ZeroRandom(),
+      clock: () => DateTime.utc(2026, 9, 20, 8, 30),
+    );
+    final created = await factory.create(
+      path,
+      masterKey: masterKey,
+      manifestId: 'd' * 52,
+    );
+    created.close();
+    File(path).writeAsBytesSync([9, 10, 11], flush: true);
+    File('$path-wal').writeAsBytesSync([1, 2, 3]);
+    File('$path-shm').writeAsBytesSync([4, 5, 6]);
+
+    final rebuilt = await factory.openOrRebuild(
+      path,
+      masterKey: masterKey,
+      manifestId: 'e' * 52,
+      populate: (database) {
+        database.execute('INSERT INTO entries VALUES (?, ?, ?, ?, ?, ?)', [
+          'entry',
+          1,
+          '2026-09-20T08:30:00Z',
+          '2026-09-20T08:30:00Z',
+          'active',
+          [7, 8],
+        ]);
+      },
+    );
+    addTearDown(rebuilt.close);
+
+    expect(
+      rebuilt.database.select('SELECT id FROM entries').single['id'],
+      'entry',
+    );
+    final quarantined = Directory(
+      '${local.path}/quarantine',
+    ).listSync().whereType<Directory>().single;
+    expect(File('${quarantined.path}/index.db').existsSync(), isTrue);
+    expect(File('${quarantined.path}/index.db-wal').readAsBytesSync(), [
+      1,
+      2,
+      3,
+    ]);
+    expect(File('${quarantined.path}/index.db-shm').existsSync(), isTrue);
+  });
+
+  test('failed rebuild preserves quarantine and publishes nothing', () async {
+    final local = Directory('${sandbox.path}/local')..createSync();
+    final path = '${local.path}/index.db';
+    final factory = IndexDatabaseFactory(
+      sodium,
+      durability: PosixDirectoryDurability(),
+      random: _ZeroRandom(),
+      clock: () => DateTime.utc(2026, 9, 20, 9),
+    );
+    final created = await factory.create(
+      path,
+      masterKey: masterKey,
+      manifestId: 'f' * 52,
+    );
+    created.close();
+
+    await expectLater(
+      factory.openOrRebuild(
+        path,
+        masterKey: masterKey,
+        manifestId: 'g' * 52,
+        populate: (_) => throw StateError('injected rebuild failure'),
+      ),
+      throwsStateError,
+    );
+
+    expect(File(path).existsSync(), isFalse);
+    expect(
+      Directory('${local.path}/quarantine')
+          .listSync(recursive: true)
+          .whereType<File>()
+          .where((file) => file.path.endsWith('index.db')),
+      hasLength(1),
+    );
+    expect(
+      local.listSync().whereType<File>().where(
+        (file) => file.path.contains('.creating-'),
+      ),
+      isEmpty,
+    );
+  });
 }
 
 String _hex(Uint8List bytes) =>
     bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
+
+final class _ZeroRandom implements Random {
+  @override
+  bool nextBool() => false;
+
+  @override
+  double nextDouble() => 0;
+
+  @override
+  int nextInt(int max) => 0;
+}

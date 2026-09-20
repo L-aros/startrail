@@ -12,9 +12,9 @@
 - Proposed ADR-0008，用于修复 sodium 在中文 Windows 上解析 vswhere 输出失败。
 - Accepted ADR-0009，并实现 Vault Header v1 固定向量、严格解析与 VMK 包装。
 - Accepted ADR-0010，并实现初始 Manifest、密文摘要与 HEAD v1 编码及创建事务。
-- Proposed ADR-0011，用于固化 SQLCipher 派生索引 Schema v1、generation 与隔离重建语义。
+- Accepted ADR-0011，并实现 SQLCipher 派生索引 Schema v1、generation 校验、成组隔离与失败安全重建。
 - Accepted ADR-0012，用于避免 SQLCipher key 进入不可清零的 Dart String。
-- Accepted ADR-0013，并开始以可复现 SQLCipher 4.16.0 源码构建导出 raw-key API。
+- Accepted ADR-0013，并以可复现 SQLCipher 4.16.0 源码构建导出 raw-key API；Android APK 链接固定 OpenSSL 3.6.2 静态库。
 - Android/Windows Flutter 工程及 domain/application/infrastructure/design_system 分层骨架。
 - canonical JSON 与 STOB v1 envelope 严格编解码及协议测试。
 - WSL 原生构建路径和 SQLCipher 运行时身份验证测试。
@@ -24,6 +24,7 @@
 ### Removed
 ### Fixed
 ### Security
+- 加密索引数据库、WAL、SHM 的 fixture 正文、raw key 与 key hex 泄漏扫描。
 - 增加 Argon2id KEK 派生及 XChaCha20-Poly1305 对象加解密、AD 绑定和篡改失败测试。
 - 增加 Vault 解锁事务、manifest v1 严格格式门禁、敏感 session 清零及错误密码/篡改回归测试。
 
