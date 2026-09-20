@@ -59,6 +59,24 @@ dependency_overrides:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
+hooks:
+  user_defines:
+    sqlite3:
+      source: source
+      path: ../../third_party/sqlcipher/sqlcipher_amalgamation.c
+      startrail_bundled_openssl_root: ../../third_party/sqlcipher/openssl
+      additional_includes:
+        - ../../third_party/sqlcipher
+      defines:
+        defines:
+          - SQLITE_HAS_CODEC
+          - SQLITE_TEMP_STORE=2
+          - SQLITE_EXTRA_INIT=sqlcipher_extra_init
+          - SQLITE_EXTRA_SHUTDOWN=sqlcipher_extra_shutdown
+          - HAVE_USLEEP
+          - SQLITE_USE_URI
+          - SQLITE_ENABLE_MEMORY_MANAGEMENT
+
 flutter:
 
   # The following line ensures that the Material Icons font is

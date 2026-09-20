@@ -45,6 +45,31 @@ void main() {
     );
   });
 
+  test('round-trips 100 independently encrypted objects', () {
+    for (var index = 0; index < 100; index++) {
+      final plaintext = Uint8List.fromList(
+        List<int>.generate(4096 + index, (offset) => (index + offset) & 0xff),
+      );
+      final encrypted = crypto.encrypt(
+        plaintext: plaintext,
+        masterKey: masterKey,
+        vaultUuid: vaultUuid,
+        type: index.isEven ? VaultObjectType.entry : VaultObjectType.blob,
+        schemaVersion: 1,
+      );
+
+      expect(
+        crypto.decrypt(
+          envelopeBytes: encrypted,
+          masterKey: masterKey,
+          vaultUuid: vaultUuid,
+        ),
+        plaintext,
+        reason: 'object $index must round-trip without cross-object state',
+      );
+    }
+  });
+
   test('tampering, wrong key, and wrong vault id expose one failure', () {
     final encrypted = crypto.encrypt(
       plaintext: Uint8List.fromList([7, 8, 9]),

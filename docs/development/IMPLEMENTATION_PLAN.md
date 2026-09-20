@@ -4,7 +4,7 @@
 
 ## Milestone 1：离线 Vault 基础
 
-状态：**In progress**；ADR-0015 的创建/解锁/锁定 UI、平台路径 adapter 与工作 isolate session 已实现。Windows 原生 SQLCipher 测试、Flutter 分析与 widget/isolate 测试通过；Android debug/release APK 构建通过，release 清单无网络或存储权限。最终 Windows 插件构建等待显式启用 Developer Mode 的系统配置授权。
+状态：**Complete**；创建/解锁/锁定 UI、平台路径 adapter 与工作 isolate session 已实现。协议级 100 对象压测、错误密码/篡改/未知格式、原子写入/回滚、SQLCipher 索引及 Flutter widget/isolate 测试通过。Android release APK 与 Windows release 构建通过；两端原生资产均验证 SQLCipher 4.16.0 和 raw-key 导出，APK 清单无网络或存储权限。
 
 交付顺序：
 
