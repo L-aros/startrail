@@ -1,6 +1,6 @@
 # ADR-0010：初始 Manifest 与 HEAD v1 编码
 
-- 状态：Proposed
+- 状态：Accepted
 - 日期：2026-09-20
 - 决策范围：Manifest/HEAD 已发布格式与本地路径
 

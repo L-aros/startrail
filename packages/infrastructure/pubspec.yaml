@@ -9,6 +9,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
+  crypto: 3.0.7
   domain:
     path: ../domain
   ffi: 2.2.0
