@@ -4,7 +4,7 @@
 
 ## Milestone 1：离线 Vault 基础
 
-状态：**In progress**；Vault Header、初始 Manifest/HEAD 与 staging 创建事务已完成。Windows 最终构建仍等待 ADR-0008 决策。
+状态：**Blocked by ADR-0011 approval**；SQLCipher 派生索引 Schema v1、generation 与隔离重建语义需审批后实现。Windows 最终构建仍等待 ADR-0008 决策。
 
 交付顺序：
 
