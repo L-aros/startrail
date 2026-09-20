@@ -40,7 +40,7 @@ void main() {
     final generation = 'a' * 52;
     final factory = IndexDatabaseFactory(
       sodium,
-      durability: PosixDirectoryDurability(),
+      durability: createDirectoryDurability(),
     );
 
     final index = await factory.create(
@@ -94,7 +94,7 @@ void main() {
       final path = '${sandbox.path}/index.db';
       final factory = IndexDatabaseFactory(
         sodium,
-        durability: PosixDirectoryDurability(),
+        durability: createDirectoryDurability(),
       );
       final created = await factory.create(
         path,
@@ -122,7 +122,7 @@ void main() {
     final path = '${local.path}/index.db';
     final factory = IndexDatabaseFactory(
       sodium,
-      durability: PosixDirectoryDurability(),
+      durability: createDirectoryDurability(),
       random: _ZeroRandom(),
       clock: () => DateTime.utc(2026, 9, 20, 8, 30),
     );
@@ -174,7 +174,7 @@ void main() {
     final path = '${local.path}/index.db';
     final factory = IndexDatabaseFactory(
       sodium,
-      durability: PosixDirectoryDurability(),
+      durability: createDirectoryDurability(),
       random: _ZeroRandom(),
       clock: () => DateTime.utc(2026, 9, 20, 9),
     );

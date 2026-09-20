@@ -14,7 +14,7 @@ void main() {
     sandbox = await Directory.systemTemp.createTemp('startrail-unlock-');
     vault = Directory('${sandbox.path}${Platform.pathSeparator}vault');
     final creator = await VaultCreator.initialize(
-      durability: PosixDirectoryDurability(),
+      durability: createDirectoryDurability(),
       clock: () => DateTime.utc(2026, 9, 20),
     );
     await creator.create(target: vault, passwordBytes: password);

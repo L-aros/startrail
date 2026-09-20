@@ -18,7 +18,7 @@ void main() {
   test('publishes a self-consistent initial vault transaction', () async {
     final target = Directory('${sandbox.path}${Platform.pathSeparator}vault');
     final creator = await VaultCreator.initialize(
-      durability: PosixDirectoryDurability(),
+      durability: createDirectoryDurability(),
       clock: () => DateTime.utc(2026, 9, 20, 1, 2, 3, 4),
     );
 
@@ -67,7 +67,7 @@ void main() {
           '${sandbox.path}${Platform.pathSeparator}vault',
         );
         final creator = await VaultCreator.initialize(
-          durability: PosixDirectoryDurability(),
+          durability: createDirectoryDurability(),
           faultInjector: (current) async {
             if (current == stage) throw StateError('injected ${stage.name}');
           },
