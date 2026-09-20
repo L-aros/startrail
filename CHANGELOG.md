@@ -14,6 +14,7 @@
 - Android/Windows Flutter 工程及 domain/application/infrastructure/design_system 分层骨架。
 - canonical JSON 与 STOB v1 envelope 严格编解码及协议测试。
 - WSL 原生构建路径和 SQLCipher 运行时身份验证测试。
+- 临时文件 flush、原子替换、回滚恢复协调器及 POSIX 目录 fsync adapter。
 ### Changed
 ### Deprecated
 ### Removed

@@ -11,6 +11,7 @@ environment:
 dependencies:
   domain:
     path: ../domain
+  ffi: 2.2.0
   sodium: 4.0.2+1
   sqlite3: 3.3.4
   # path: ^1.9.0
