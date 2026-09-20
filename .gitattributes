@@ -2,3 +2,7 @@
 # SHA-256 hashes are part of the supply-chain verification gate.
 third_party/sqlcipher/*.c whitespace=-trailing-space
 third_party/sqlcipher/*.h whitespace=-trailing-space
+
+# The sodium snapshot is verified byte-for-byte against its original pub
+# archive, including whitespace in generated files.
+third_party/sodium/** whitespace=-trailing-space

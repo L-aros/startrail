@@ -7,12 +7,13 @@
 | Flutter SDK | 3.41.6 | BSD-3-Clause | Android/Windows 客户端运行时 | 已锁定开发基线 |
 | Dart SDK | 3.11.4 | BSD-3-Clause | 共享产品层语言与工具链 | 已锁定开发基线 |
 | flutter_lints | 6.0.0 | BSD-3-Clause | 仅开发期静态分析规则 | 待 lockfile 验证 |
-| sodium / libsodium | 4.0.2+1 / 1.0.21 | BSD-3-Clause, ISC | Argon2id、XChaCha20-Poly1305、CSPRNG、安全密钥内存 | ADR-0006 Accepted；WSL native-assets 已验证 |
+| sodium / libsodium | 4.0.2+1（vendored patch） / 1.0.21 | BSD-3-Clause, ISC | Argon2id、XChaCha20-Poly1305、CSPRNG、安全密钥内存 | ADR-0006/0008 Accepted；原始 pub archive hash 与单行 Windows 构建补丁可离线审计 |
 | sqlite3 / SQLCipher / OpenSSL | 3.3.4+startrail.1 / 4.16.0 / 3.6.2 | MIT / BSD-style / Apache-2.0 | 加密派生索引；raw-key 原生绑定 | ADR-0013 Accepted；源码、hash、补丁、WSL 行为和 Android 三 ABI APK 已验证；Windows 待门禁 |
 | ffi | 2.2.0 | BSD-3-Clause | POSIX 目录 fsync 平台 adapter；不处理网络或内容语义 | 已为 sodium/sqlite3 间接依赖；Linux/Android API |
 | crypto | 3.0.7 | BSD-3-Clause | Manifest 密文字节 SHA-256 标识与 HEAD 完整性验证 | 已为工具链间接依赖；纯 Dart、无网络行为 |
 
 固定来源与 SHA-256：
+- sodium 4.0.2+1 pub archive `19e3153ef4d1d10087d78d551d78e56909d159047a578ec692814c65ca450dfc`；仓库 patch 仅在 `windows_builder.dart` 的 vswhere 参数增加 `-utf8`，不修改 libsodium 源码或运行时 API。
 
 - sqlite3.dart tag `sqlite3-3.3.4`，commit `4a752b1a4281e315ec50a6535212cb4c9183356e`；pub archive `752d9d746052359a2022f588bb979f2e7c4e0f9e4b6a1c3121f7626a1574974b`。
 - SQLCipher 4.16.0 source archive `9f51a0960cc3cebaea62ff2bfa2ec3ef502b1be808d562d89cb876a18ed09d9c`；生成的 amalgamation `0c8371853e124f20bb7728368559fe743ac3d1f0b97d317ba68b70bfe802bcb2`。

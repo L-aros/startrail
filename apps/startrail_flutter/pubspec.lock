@@ -297,10 +297,9 @@ packages:
   sodium:
     dependency: transitive
     description:
-      name: sodium
-      sha256: "19e3153ef4d1d10087d78d551d78e56909d159047a578ec692814c65ca450dfc"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../third_party/sodium"
+      relative: true
+    source: path
     version: "4.0.2+1"
   source_span:
     dependency: transitive

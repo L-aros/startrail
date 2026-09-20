@@ -13,7 +13,8 @@ dependencies:
   domain:
     path: ../domain
   ffi: 2.2.0
-  sodium: 4.0.2+1
+  sodium:
+    path: ../../third_party/sodium
   sqlite3:
     path: ../../third_party/sqlite3
   # path: ^1.9.0

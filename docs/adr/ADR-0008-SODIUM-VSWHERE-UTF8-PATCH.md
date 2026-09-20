@@ -1,6 +1,6 @@
 # ADR-0008：Sodium Windows 构建的 vswhere UTF-8 补丁
 
-状态：**Proposed**；日期：2026-09-20。
+状态：**Accepted**；日期：2026-09-20。
 
 ## 背景
 
@@ -8,7 +8,7 @@ sodium 4.0.2+1 的 Windows native-assets builder 调用 vswhere.exe -format json
 
 官方 vswhere 提供 -utf8 参数。上游 builder 的参数列表缺少该参数，是可独立复现的构建兼容缺陷，与加密算法运行时无关。
 
-## 拟议决策
+## 决策
 
 在仓库内维护 sodium 4.0.2+1 的最小 vendor patch，仅在 windows_builder.dart 的 vswhere 参数中增加 -utf8；不修改任何 Dart API、libsodium 源码、编译选项、密码算法或二进制内容。pubspec 通过仓库内 path 依赖引用完整、固定的上游源码快照，记录原始包 SHA-256、补丁 diff 和许可证；CI 校验 vendor 目录除该单行补丁外与上游归档一致。
 
