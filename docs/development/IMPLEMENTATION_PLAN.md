@@ -4,7 +4,7 @@
 
 ## Milestone 1：离线 Vault 基础
 
-状态：**In progress**；已采用 WSL 进行共享层与原生依赖验证，Windows 最终构建仍等待 ADR-0008 决策。
+状态：**Blocked by ADR-0009 approval**；密码学原语与对象 envelope 已完成，Vault Header v1 精确编码需审批后实现。Windows 最终构建仍等待 ADR-0008 决策。
 
 交付顺序：
 
