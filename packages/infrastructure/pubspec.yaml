@@ -1,0 +1,25 @@
+name: infrastructure
+publish_to: none
+description: 拾星迹本地持久化与密码学适配层。
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.11.4
+
+# Add regular dependencies here.
+dependencies:
+  domain:
+    path: ../domain
+  sodium: 4.0.2+1
+  sqlite3: 3.3.4
+  # path: ^1.9.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.32.0
+
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlcipher

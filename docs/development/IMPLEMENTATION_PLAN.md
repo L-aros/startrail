@@ -4,7 +4,7 @@
 
 ## Milestone 1：离线 Vault 基础
 
-状态：**Blocked by ADR-0008 approval**；sodium Windows builder 的 vswhere 输出编码缺陷阻止 native-assets 构建。
+状态：**In progress**；已采用 WSL 进行共享层与原生依赖验证，Windows 最终构建仍等待 ADR-0008 决策。
 
 交付顺序：
 
