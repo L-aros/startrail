@@ -4,7 +4,7 @@
 
 ## Milestone 1：离线 Vault 基础
 
-状态：**In progress**；ADR-0013 的 SQLCipher 源码构建、raw-key 绑定、Android/Windows 静态链接及派生索引隔离重建已完成。ADR-0014 已实现并通过中文 Windows 的 OpenSSL、Flutter 与 SQLCipher raw-key 回归；Windows 目录刷盘 adapter 已通过真实目录测试。创建/解锁/锁定 UI 的真实平台接线等待 ADR-0015 决策。
+状态：**In progress**；ADR-0015 的创建/解锁/锁定 UI、平台路径 adapter 与工作 isolate session 已实现。Windows 原生 SQLCipher 测试、Flutter 分析与 widget/isolate 测试通过；Android debug/release APK 构建通过，release 清单无网络或存储权限。最终 Windows 插件构建等待显式启用 Developer Mode 的系统配置授权。
 
 交付顺序：
 

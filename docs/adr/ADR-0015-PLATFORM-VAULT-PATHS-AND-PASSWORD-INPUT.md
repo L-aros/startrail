@@ -1,6 +1,6 @@
 # ADR-0015：平台 Vault 路径与密码输入边界
 
-状态：**Proposed**；日期：2026-09-20。
+状态：**Accepted**；日期：2026-09-20。
 
 ## 背景
 
@@ -8,7 +8,7 @@ Milestone 1 的创建、打开与解锁 UI 必须在 Android 10+ scoped storage 
 
 Flutter 密码输入控件以不可变 Dart `String` 暂存文本，无法承诺原地清零；密码学层则要求尽快转换为可覆盖的字节并在使用后清零。Argon2id 还必须离开 UI isolate，避免 64 MiB、3 轮 KDF 阻塞界面。
 
-## 拟议决策
+## 决策
 
 1. 精确锁定 Flutter 官方 `path_provider 2.1.6`（BSD-3-Clause），仅用于取得 Android/Windows application-support 目录。默认 Vault 位于该目录下的 `vault` 子目录；不得使用临时目录、Desktop 或下载目录。
 2. 精确锁定 Flutter 官方 `file_selector 1.1.0`（BSD-3-Clause；Android 实现包含 Apache-2.0 代码），仅在用户明确点击“选择位置/打开 Vault”时调用系统目录选择器。不得请求 `MANAGE_EXTERNAL_STORAGE`，不得后台扫描目录，不新增网络行为。
