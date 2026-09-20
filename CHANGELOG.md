@@ -22,6 +22,7 @@
 ### Fixed
 ### Security
 - 增加 Argon2id KEK 派生及 XChaCha20-Poly1305 对象加解密、AD 绑定和篡改失败测试。
+- 增加 Vault 解锁事务、manifest v1 严格格式门禁、敏感 session 清零及错误密码/篡改回归测试。
 
 ## [0.0.0] - YYYY-MM-DD
 
