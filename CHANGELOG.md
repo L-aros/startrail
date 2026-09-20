@@ -28,6 +28,7 @@
 ### Fixed
 - 修复 Windows runner 中文标题受本地代码页误解码，以及顶层 Flutter 构建未继承依赖包 SQLCipher hook、可能静默链接普通 SQLite 的问题。
 ### Security
+- 忽略本地环境配置、私钥、签名材料、仓库内 Vault 目录与明文导出，避免其被意外提交。
 - 加密索引数据库、WAL、SHM 的 fixture 正文、raw key 与 key hex 泄漏扫描。
 - 增加 Argon2id KEK 派生及 XChaCha20-Poly1305 对象加解密、AD 绑定和篡改失败测试。
 - 增加 Vault 解锁事务、manifest v1 严格格式门禁、敏感 session 清零及错误密码/篡改回归测试。

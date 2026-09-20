@@ -9,10 +9,24 @@ coverage/
 .vscode/
 *.iml
 .env
+.env.*
+!.env.example
+.envrc
+
+# Credentials and release signing material
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa
 
 # Sensitive and generated vault material
 *.db
 *.db-shm
 *.db-wal
 *.vault
+vault/
 test-vaults/
+exports/
