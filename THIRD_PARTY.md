@@ -14,6 +14,7 @@
 | crypto | 3.0.7 | BSD-3-Clause | Manifest 密文字节 SHA-256 标识与 HEAD 完整性验证 | 已为工具链间接依赖；纯 Dart、无网络行为 |
 | path_provider | 2.1.6 | BSD-3-Clause | Android/Windows 应用私有默认 Vault 根目录 | ADR-0015 Accepted；Flutter 官方插件、无网络行为 |
 | file_selector | 1.1.0 | BSD-3-Clause；Android 实现含 Apache-2.0 | 用户显式选择 Vault 目录 | ADR-0015 Accepted；系统选择器、无全盘权限或后台扫描 |
+| GitHub Actions checkout/setup-java/upload-artifact；subosito/flutter-action | v4 / v4 / v4；v2 | MIT；MIT | 仅 CI 的源码检出、JDK、构建物上传与固定 Flutter SDK 安装 | 仅最小 `contents: read` 权限；不进入产品、无用户数据访问、artifact 保留 14 天 |
 
 固定来源与 SHA-256：
 - sodium 4.0.2+1 pub archive `19e3153ef4d1d10087d78d551d78e56909d159047a578ec692814c65ca450dfc`；仓库 patch 仅在 `windows_builder.dart` 的 vswhere 参数增加 `-utf8`，不修改 libsodium 源码或运行时 API。

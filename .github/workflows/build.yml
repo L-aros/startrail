@@ -1,0 +1,85 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    name: Android / test and release APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: apps/startrail_flutter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.41.6
+          channel: stable
+          cache: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - name: Analyze and Flutter tests
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
+      - name: Infrastructure tests
+        working-directory: packages/infrastructure
+        run: |
+          dart pub get
+          dart test
+      - name: Build release APK
+        run: flutter build apk --release
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: startrail-android-apk
+          path: apps/startrail_flutter/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 14
+
+  windows:
+    name: Windows / release bundle
+    runs-on: windows-2022
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: apps/startrail_flutter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.41.6
+          channel: stable
+          cache: true
+      - name: Enable Developer Mode for native asset links
+        run: reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" /t REG_DWORD /f /v AllowDevelopmentWithoutDevLicense /d 1
+      - name: Build Windows release
+        run: |
+          flutter pub get
+          flutter build windows --release
+      - name: Package Windows release bundle
+        run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath startrail-windows-x64.zip -CompressionLevel Optimal
+      - name: Upload Windows bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: startrail-windows-x64
+          path: apps/startrail_flutter/startrail-windows-x64.zip
