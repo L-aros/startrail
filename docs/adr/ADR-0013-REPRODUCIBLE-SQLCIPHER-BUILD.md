@@ -1,6 +1,6 @@
 # ADR-0013：可复现 SQLCipher 源码构建与 raw-key 符号导出
 
-- 状态：Proposed
+- 状态：Accepted
 - 日期：2026-09-20
 - 决策范围：关键数据库依赖、原生构建供应链、Android/Windows/Linux 兼容性
 

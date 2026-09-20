@@ -12,5 +12,7 @@ export 'src/format/object_envelope.dart';
 export 'src/format/vault_header.dart';
 export 'src/storage/atomic_file_writer.dart';
 export 'src/storage/posix_directory_durability.dart';
+export 'src/storage/index_database.dart';
+export 'src/storage/sqlcipher_raw_key_adapter.dart';
 export 'src/vault/vault_creator.dart';
 export 'src/vault/vault_unlocker.dart';

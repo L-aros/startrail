@@ -14,7 +14,8 @@ dependencies:
     path: ../domain
   ffi: 2.2.0
   sodium: 4.0.2+1
-  sqlite3: 3.3.4
+  sqlite3:
+    path: ../../third_party/sqlite3
   # path: ^1.9.0
 
 dev_dependencies:
@@ -24,4 +25,18 @@ dev_dependencies:
 hooks:
   user_defines:
     sqlite3:
-      source: sqlcipher
+      source: source
+      path: ../../third_party/sqlcipher/sqlcipher_amalgamation.c
+      additional_includes:
+        - ../../third_party/sqlcipher
+      additional_libraries:
+        - crypto
+      defines:
+        defines:
+          - SQLITE_HAS_CODEC
+          - SQLITE_TEMP_STORE=2
+          - SQLITE_EXTRA_INIT=sqlcipher_extra_init
+          - SQLITE_EXTRA_SHUTDOWN=sqlcipher_extra_shutdown
+          - HAVE_USLEEP
+          - SQLITE_USE_URI
+          - SQLITE_ENABLE_MEMORY_MANAGEMENT

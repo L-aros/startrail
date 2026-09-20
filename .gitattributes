@@ -1,0 +1,4 @@
+# Preserve generated upstream amalgamations byte-for-byte; their recorded
+# SHA-256 hashes are part of the supply-chain verification gate.
+third_party/sqlcipher/*.c whitespace=-trailing-space
+third_party/sqlcipher/*.h whitespace=-trailing-space
