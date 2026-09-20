@@ -1,6 +1,6 @@
 # ADR-0012：sqlite3 raw-key 原生绑定补丁
 
-- 状态：Proposed
+- 状态：Accepted
 - 日期：2026-09-20
 - 决策范围：关键数据库依赖、密钥内存生命周期、原生 FFI
 
@@ -45,6 +45,7 @@ SQLCipher 原生 API 提供 `sqlite3_key_v2(sqlite3*, "main", key_ptr, key_len)`
 ## 安全与兼容性影响
 
 - 增加关键依赖维护责任，但不改变数据库文件格式、Schema、Vault 协议或网络行为。
+- 实施探针确认 sqlite3 3.3.4 下载的预编译 SQLCipher 隐藏 `sqlite3_key_v2`；因此本 ADR 的绑定补丁必须在 ADR-0013 解决可复现原生库构建后实施，禁止回退到 String PRAGMA。
 - raw key 与 ADR-0011 的 SQLCipher 数据库兼容；从 String PRAGMA 改为 `sqlite3_key_v2` 不改变派生 key bytes。
 - vendored package 只能构建 SQLCipher source；普通 SQLite 构建必须在 raw-key 初始化阶段失败。
 - 所有平台需要验证符号可用性；Android API 29+、Windows x64、WSL Linux 必须运行同一错误 key 与明文扫描测试。
