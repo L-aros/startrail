@@ -4,7 +4,7 @@
 
 ## Milestone 1：离线 Vault 基础
 
-状态：**Blocked by ADR-0011 approval**；SQLCipher 派生索引 Schema v1、generation 与隔离重建语义需审批后实现。Windows 最终构建仍等待 ADR-0008 决策。
+状态：**Blocked by ADR-0012 approval**；sqlite3 3.3.4 不支持参数绑定 PRAGMA key，需审批 raw-key 原生绑定补丁以维持密钥可清零。Windows 最终构建仍等待 ADR-0008 决策。
 
 交付顺序：
 

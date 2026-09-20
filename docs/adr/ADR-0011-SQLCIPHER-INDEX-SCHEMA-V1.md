@@ -1,6 +1,6 @@
 # ADR-0011：SQLCipher 派生索引 Schema v1
 
-- 状态：Proposed
+- 状态：Accepted
 - 日期：2026-09-20
 - 决策范围：数据库 Schema、索引密钥使用、迁移与损坏恢复
 
