@@ -1,6 +1,6 @@
 # ADR-0014：native_toolchain_c 的 vswhere UTF-8 解码
 
-状态：**Proposed**；日期：2026-09-20。
+状态：**Accepted**；日期：2026-09-20。
 
 ## 背景
 
@@ -8,7 +8,7 @@ ADR-0008 的 sodium 单行补丁已实现并通过离线差异验证。继续执
 
 设置 `chcp 65001`、PowerShell `OutputEncoding` 和 `Console.OutputEncoding` 后复测结果不变。该依赖同时是 sqlite3 原生构建钩子的关键组成，不能通过修改产品区域设置规避。
 
-## 拟议决策
+## 决策
 
 完整 vendor `native_toolchain_c 0.18.0`，原始 pub archive SHA-256 为 `8aaead321425bd3f03bd5894aa27c8ea6993eab95531da7e59f5d39c6e5708ec`。只进行以下构建期修改：
 

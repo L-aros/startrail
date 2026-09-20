@@ -15,7 +15,7 @@
 - Accepted ADR-0011，并实现 SQLCipher 派生索引 Schema v1、generation 校验、成组隔离与失败安全重建。
 - Accepted ADR-0012，用于避免 SQLCipher key 进入不可清零的 Dart String。
 - Accepted ADR-0013，并以可复现 SQLCipher 4.16.0 源码构建导出 raw-key API；Android APK 链接固定 OpenSSL 3.6.2 静态库。
-- Proposed ADR-0014，用于修复 native_toolchain_c 对 `vswhere -utf8` 输出仍使用系统编码解码的问题。
+- Accepted ADR-0014，并限定 native_toolchain_c 仅对 `vswhere -utf8` 输出使用显式 UTF-8 解码。
 - Android/Windows Flutter 工程及 domain/application/infrastructure/design_system 分层骨架。
 - canonical JSON 与 STOB v1 envelope 严格编解码及协议测试。
 - WSL 原生构建路径和 SQLCipher 运行时身份验证测试。

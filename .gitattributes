@@ -6,3 +6,7 @@ third_party/sqlcipher/*.h whitespace=-trailing-space
 # The sodium snapshot is verified byte-for-byte against its original pub
 # archive, including whitespace in generated files.
 third_party/sodium/** whitespace=-trailing-space
+
+# Preserve the native_toolchain_c pub snapshot, including upstream CRLF files.
+# An offline verifier constrains the approved UTF-8 decoding patch.
+third_party/native_toolchain_c/** -text whitespace=-trailing-space

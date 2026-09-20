@@ -78,6 +78,15 @@ sealed class SqliteBinary {
           additionalLibraries: [
             ...?((userDefines['additional_libraries'] as List?)
                 ?.cast<String>()),
+            if (bundledOpenSslDirectory != null)
+              targetOS == OS.windows ? 'libcrypto' : 'crypto',
+            if (bundledOpenSslDirectory != null && targetOS == OS.windows) ...[
+              'ws2_32',
+              'gdi32',
+              'advapi32',
+              'crypt32',
+              'user32',
+            ],
             if (bundledOpenSslDirectory != null && targetOS == OS.android)
               'log',
           ],
