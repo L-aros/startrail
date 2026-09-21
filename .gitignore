@@ -8,6 +8,8 @@ coverage/
 .idea/
 .vscode/
 *.iml
+# Agent workspace data (session memory and handoff notes)
+.workbuddy/
 .env
 .env.*
 !.env.example
