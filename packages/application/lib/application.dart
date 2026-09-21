@@ -1,8 +1,4 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// 拾星迹应用用例与状态编排层。
 library;
 
-export 'src/application_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.
+export 'src/entry_service.dart';

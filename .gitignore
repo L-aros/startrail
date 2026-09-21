@@ -27,6 +27,6 @@ id_rsa
 *.db-shm
 *.db-wal
 *.vault
-vault/
+/vault/
 test-vaults/
 exports/

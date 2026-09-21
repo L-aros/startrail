@@ -1,6 +1,6 @@
 import 'package:application/application.dart';
 
 void main() {
-  var awesome = Awesome();
-  print('awesome: ${awesome.isAwesome}');
+  // EntryService 通过 EntryStore 端口注入；实际编排见应用层集成。
+  print(EntryNotFoundError().code);
 }
