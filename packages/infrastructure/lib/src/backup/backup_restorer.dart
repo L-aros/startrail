@@ -98,7 +98,7 @@ final class BackupRestorer {
     Directory staging,
   ) async {
     final separator = Platform.pathSeparator;
-    source.setPosition(opened.filesStartOffset);
+    await source.setPosition(opened.filesStartOffset);
     for (final entry in opened.manifest.files) {
       final relative = entry.path.replaceAll('/', separator);
       final digest = await _writeStagedFile(

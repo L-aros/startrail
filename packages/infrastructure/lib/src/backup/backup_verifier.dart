@@ -68,7 +68,7 @@ final class BackupVerifier {
 
       Uint8List? headBytes;
       Uint8List? vaultHeaderBytes;
-      handle.setPosition(opened.filesStartOffset);
+      await handle.setPosition(opened.filesStartOffset);
       for (final entry in manifest.files) {
         final keep = entry.path == 'HEAD' || entry.path == 'vault.header';
         final result = await _readAndHash(handle, entry.size, keep);
