@@ -163,7 +163,7 @@ final class BackupCreator {
   ) {
     if (!directory.existsSync()) return;
     for (final entity in directory.listSync()) {
-      final name = entity.uri.pathSegments.last;
+      final name = _basename(entity.path);
       if (entity is File) {
         output.add(_SourceFile('$prefix/$name', ''));
       } else if (entity is Directory) {
@@ -231,6 +231,12 @@ final class BackupCreator {
 
 String _digestString(Uint8List digestBytes) =>
     'sha256:${base64Url.encode(digestBytes).replaceAll('=', '')}';
+
+String _basename(String path) {
+  final normalized = path.replaceAll('\\', '/');
+  final index = normalized.lastIndexOf('/');
+  return index < 0 ? normalized : normalized.substring(index + 1);
+}
 
 String _uuidText(Uint8List bytes) {
   if (bytes.length != 16) {

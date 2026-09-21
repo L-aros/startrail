@@ -60,7 +60,15 @@ final class BackupHeaderCodec {
         bytes.length != backupHeaderPrefixLength + length) {
       throw const CorruptVaultDataFailure();
     }
-    final payload = Uint8List.sublistView(bytes, backupHeaderPrefixLength);
+    return decodePayload(
+      Uint8List.sublistView(bytes, backupHeaderPrefixLength),
+    );
+  }
+
+  /// Parses just the canonical JSON payload (without the magic/length prefix).
+  /// Used by the backup opener, which reads the header fields separately from
+  /// the container stream.
+  BackupHeader decodePayload(Uint8List payload) {
     try {
       final decoded = jsonDecode(utf8.decode(payload, allowMalformed: false));
       if (decoded is! Map<String, dynamic>) {

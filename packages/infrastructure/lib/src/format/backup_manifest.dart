@@ -52,6 +52,9 @@ final class BackupManifestCodec {
     for (final file in manifest.files) {
       _validatePath(file.path);
       _validateDigest(file.digest);
+      if (file.size < 0) {
+        throw const FormatException('invalid file size');
+      }
     }
     return encodeCanonicalJson({
       'created_at': formatTimestamp(manifest.createdAt),

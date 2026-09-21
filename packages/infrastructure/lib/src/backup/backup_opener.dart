@@ -66,7 +66,7 @@ final class BackupOpener {
     if (headerBytes.length != headerLength) {
       throw const CorruptVaultDataFailure();
     }
-    final header = _headerCodec.decode(headerBytes);
+    final header = _headerCodec.decodePayload(headerBytes);
 
     final kek = PasswordKdf(
       _sodium,
