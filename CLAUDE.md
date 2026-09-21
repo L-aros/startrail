@@ -1,6 +1,6 @@
 # CLAUDE.md — 实施导航
 
-开始任何工作前阅读：`AGENTS.md` → `docs/architecture/ARCHITECTURE.md` → 所在领域文档。实现分层为 `presentation → application → domain ← infrastructure`；依赖箭头只能向内。
+开始任何工作前阅读：`AGENTS.md` → `docs/architecture/ARCHITECTURE.md` → 所在领域文档；再检查 `git status`、最近提交、当前 diff 及关联 Issue/CI，以便从其他 Agent 的可审阅状态续接。实现分层为 `presentation → application → domain ← infrastructure`；依赖箭头只能向内。
 
 ## 推荐交付顺序
 
@@ -15,3 +15,5 @@
 ## AI 规则
 
 AI 可生成样板、测试、文档和本地代码；不得访问真实 Vault、使用真实用户内容作为提示词、自动安装未审查依赖、自动上传、自动发布，或通过模糊化来隐藏数据流。每个生成改动都要可审阅、可复现且受测试覆盖。详见 `docs/development/AI_RULES.md`。
+
+任务可通过 Git 提交、Issue/PR、CI 与已批准 ADR 续接；仅在 `AGENTS.md` 定义的未完成/阻塞情形写最小交接摘要，不要求每个正常会话结束时总结。
