@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
+import 'timeline_page.dart';
 import 'vault_backend.dart';
 import 'vault_paths.dart';
 
@@ -109,23 +110,25 @@ class _StarTrailAppState extends State<StarTrailApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff465d91)),
         useMaterial3: true,
       ),
-      home: Scaffold(
-        appBar: AppBar(title: const Text('拾星迹')),
-        body: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: switch (_view) {
-                VaultView.welcome => _welcome(),
-                VaultView.create => _credentials(create: true),
-                VaultView.unlock => _credentials(create: false),
-                VaultView.unlocked => _unlocked(),
-              },
+      home: _view == VaultView.unlocked
+          ? TimelinePage(backend: _backend, onLock: _lock)
+          : Scaffold(
+              appBar: AppBar(title: const Text('拾星迹')),
+              body: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 480),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: switch (_view) {
+                      VaultView.welcome => _welcome(),
+                      VaultView.create => _credentials(create: true),
+                      VaultView.unlock => _credentials(create: false),
+                      VaultView.unlocked => const SizedBox.shrink(),
+                    },
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -203,17 +206,5 @@ class _StarTrailAppState extends State<StarTrailApp> {
         ),
       ],
     ),
-  );
-
-  Widget _unlocked() => Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      const Icon(Icons.lock_open, size: 48),
-      const SizedBox(height: 16),
-      const Text('Vault 已解锁', textAlign: TextAlign.center),
-      const SizedBox(height: 24),
-      FilledButton(onPressed: _lock, child: const Text('锁定')),
-    ],
   );
 }

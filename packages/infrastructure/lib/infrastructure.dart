@@ -22,4 +22,5 @@ export 'src/storage/sqlcipher_raw_key_adapter.dart';
 export 'src/storage/windows_directory_durability.dart';
 export 'src/vault/vault_creator.dart';
 export 'src/vault/vault_entry_store.dart';
+export 'src/vault/vault_session.dart';
 export 'src/vault/vault_unlocker.dart';

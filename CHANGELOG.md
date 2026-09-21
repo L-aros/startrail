@@ -25,6 +25,8 @@
 - Accepted ADR-0016，并实现条目对象协议（entry/tombstone payload v1）、标签/附件内嵌、manifest 更新事务、加密搜索（search_ciphertext 与标签密文列）。
 - 领域层 Entry/Tag/Attachment 值对象与 EntryStore 端口、应用层 EntryService 用例与稳定错误码映射。
 - 基础设施 VaultEntryStore：对象加密落盘、manifest 父链与 HEAD 原子替换、SQLCipher 索引 CRUD、时间线倒序查询、解锁后本地搜索。
+- VaultSession 会话封装与 isolate worker 扩展，支持解锁后条目 CRUD。
+- 解锁后时间线 UI：按事件时间倒序浏览、本地搜索、新建/编辑/删除条目、标签（逗号分隔）。
 ### Changed
 ### Deprecated
 ### Removed

@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  application:
+    path: ../../packages/application
   domain:
     path: ../../packages/domain
   infrastructure:

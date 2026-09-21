@@ -33,10 +33,10 @@ void main() {
     await tester.enterText(find.byKey(const Key('vault-password')), 'secret');
     await tester.tap(find.text('创建并解锁'));
     await tester.pumpAndSettle();
-    expect(find.text('Vault 已解锁'), findsOneWidget);
+    expect(find.text('时间线'), findsOneWidget);
     expect(backend.lastPassword, everyElement(0));
 
-    await tester.tap(find.text('锁定'));
+    await tester.tap(find.byTooltip('锁定'));
     await tester.pumpAndSettle();
     expect(find.text('打开 Vault'), findsOneWidget);
     expect(backend.lockCount, 1);
@@ -55,7 +55,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('VAULT_AUTH_FAILED'), findsOneWidget);
-    expect(find.text('Vault 已解锁'), findsNothing);
+    expect(find.text('时间线'), findsNothing);
     expect(backend.lastPassword, everyElement(0));
   });
 }
@@ -83,6 +83,31 @@ final class _FakeBackend implements VaultBackend {
   Future<void> lock() async {
     lockCount++;
   }
+
+  @override
+  Future<BackendResult> createEntry(Map<String, Object?> draft) async =>
+      BackendResult.ok();
+
+  @override
+  Future<BackendResult> updateEntry(
+    String id,
+    int revision,
+    Map<String, Object?> draft,
+  ) async => BackendResult.ok();
+
+  @override
+  Future<BackendResult> deleteEntry(String id, int revision) async =>
+      BackendResult.ok();
+
+  @override
+  Future<BackendResult> timeline() async => BackendResult.ok(const []);
+
+  @override
+  Future<BackendResult> search(String query) async =>
+      BackendResult.ok(const []);
+
+  @override
+  Future<BackendResult> tags() async => BackendResult.ok(const []);
 }
 
 final class _FakePaths implements VaultPaths {
