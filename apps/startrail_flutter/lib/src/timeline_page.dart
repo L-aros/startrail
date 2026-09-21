@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:domain/domain.dart';
 
@@ -66,7 +67,8 @@ class _TimelinePageState extends State<TimelinePage> {
   Future<void> _openEditor([Map<String, Object?>? existing]) async {
     final draft = await showDialog<Map<String, Object?>>(
       context: context,
-      builder: (_) => _EntryEditorDialog(existing: existing),
+      builder: (_) =>
+          _EntryEditorDialog(backend: widget.backend, existing: existing),
     );
     if (draft == null || !mounted) return;
     await _save(draft, existing: existing);
@@ -264,10 +266,11 @@ class _EntryCard extends StatelessWidget {
   }
 }
 
-/// 新建/编辑条目对话框：正文、心情、标签（逗号分隔）。
+/// 新建/编辑条目对话框：正文、心情、标签（逗号分隔）、附件。
 class _EntryEditorDialog extends StatefulWidget {
-  const _EntryEditorDialog({this.existing});
+  const _EntryEditorDialog({required this.backend, this.existing});
 
+  final VaultBackend backend;
   final Map<String, Object?>? existing;
 
   @override
@@ -279,6 +282,7 @@ class _EntryEditorDialogState extends State<_EntryEditorDialog> {
   late final TextEditingController _mood;
   late final TextEditingController _tags;
   DateTime _occurredAt = DateTime.now();
+  List<Map<String, Object?>> _attachments = const [];
 
   @override
   void initState() {
@@ -294,6 +298,8 @@ class _EntryEditorDialogState extends State<_EntryEditorDialog> {
     );
     if (existing != null) {
       _occurredAt = DateTime.parse(existing['occurred_at'] as String);
+      _attachments = (existing['attachments'] as List)
+          .cast<Map<String, Object?>>();
     }
   }
 
@@ -341,6 +347,26 @@ class _EntryEditorDialogState extends State<_EntryEditorDialog> {
                 border: OutlineInputBorder(),
               ),
             ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: OutlinedButton.icon(
+                key: const Key('entry-add-attachment'),
+                icon: const Icon(Icons.attach_file),
+                label: const Text('添加附件'),
+                onPressed: _pickAttachment,
+              ),
+            ),
+            for (final attachment in _attachments)
+              _AttachmentTile(
+                attachment: attachment,
+                onRemove: () => setState(() {
+                  _attachments = [
+                    for (final a in _attachments)
+                      if (a['id'] != attachment['id']) a,
+                  ];
+                }),
+              ),
           ],
         ),
       ),
@@ -366,10 +392,66 @@ class _EntryEditorDialogState extends State<_EntryEditorDialog> {
       'body': body,
       'mood': _mood.text.trim().isEmpty ? null : _mood.text.trim(),
       'tags': _parseTags(_tags.text, existingTags),
-      'attachments': const <Object?>[],
+      'attachments': _attachments,
     };
     Navigator.pop(context, draft);
   }
+
+  Future<void> _pickAttachment() async {
+    const typeGroup = XTypeGroup(label: '附件');
+    final file = await openFile(acceptedTypeGroups: const [typeGroup]);
+    if (file == null) return;
+    final result = await widget.backend.importAttachment(
+      file.path,
+      file.mimeType ?? 'application/octet-stream',
+    );
+    if (!mounted) return;
+    if (!result.ok) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(result.error ?? '附件导入失败')));
+      return;
+    }
+    setState(() {
+      _attachments = [
+        ..._attachments,
+        (result.data as Map).cast<String, Object?>(),
+      ];
+    });
+  }
+}
+
+/// 编辑器中的单个附件条目：mime、大小与移除按钮。
+class _AttachmentTile extends StatelessWidget {
+  const _AttachmentTile({required this.attachment, required this.onRemove});
+
+  final Map<String, Object?> attachment;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final mime = attachment['mime'] as String;
+    final byteSize = attachment['byte_size'] as int;
+    return ListTile(
+      dense: true,
+      contentPadding: EdgeInsets.zero,
+      leading: const Icon(Icons.insert_drive_file_outlined),
+      title: Text(mime, style: Theme.of(context).textTheme.bodySmall),
+      subtitle: Text(_formatBytes(byteSize)),
+      trailing: IconButton(
+        tooltip: '移除附件',
+        iconSize: 18,
+        onPressed: onRemove,
+        icon: const Icon(Icons.close),
+      ),
+    );
+  }
+}
+
+String _formatBytes(int bytes) {
+  if (bytes < 1024) return '$bytes B';
+  if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+  return '${(bytes / 1024 / 1024).toStringAsFixed(1)} MB';
 }
 
 List<Map<String, Object?>> _parseTags(

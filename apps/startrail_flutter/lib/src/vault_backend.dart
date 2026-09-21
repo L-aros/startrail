@@ -37,6 +37,7 @@ abstract interface class VaultBackend {
   Future<BackendResult> timeline();
   Future<BackendResult> search(String query);
   Future<BackendResult> tags();
+  Future<BackendResult> importAttachment(String path, String mime);
 }
 
 final class IsolateVaultBackend implements VaultBackend {
@@ -96,6 +97,14 @@ final class IsolateVaultBackend implements VaultBackend {
   @override
   Future<BackendResult> tags() =>
       _entryRequest(const {'operation': 'entry.tags'});
+
+  @override
+  Future<BackendResult> importAttachment(String path, String mime) =>
+      _entryRequest({
+        'operation': 'attachment.import',
+        'path': path,
+        'mime': mime,
+      });
 
   Future<String?> _authRequest(
     String operation,
@@ -255,6 +264,25 @@ Future<void> _vaultWorker(SendPort ready) async {
               for (final tag in tags)
                 {'id': tag.id.value, 'name': tag.name, 'color': tag.color},
             ],
+          });
+        case 'attachment.import':
+          final path = message['path'] as String;
+          final mime =
+              (message['mime'] as String?) ?? 'application/octet-stream';
+          final bytes = await File(path).readAsBytes();
+          final attachment = await session.entryStore.importBlob(
+            mime: mime,
+            bytes: bytes,
+          );
+          reply.send({
+            'ok': true,
+            'data': {
+              'id': attachment.id.value,
+              'blob_id': attachment.blobId.value,
+              'mime': attachment.mime,
+              'byte_size': attachment.byteSize,
+              'digest': attachment.digest,
+            },
           });
         default:
           reply.send(const {'error': 'VAULT_OPERATION_FAILED'});

@@ -177,6 +177,29 @@ void main() {
     );
     expect(rows.single['manifest_id'], after);
   });
+
+  test('imports an attachment as an immutable encrypted blob', () async {
+    final session = await openSession();
+    addTearDown(session.dispose);
+
+    final bytes = Uint8List.fromList(List.generate(64, (i) => i));
+    final attachment = await session.store.importBlob(
+      mime: 'image/png',
+      bytes: bytes,
+    );
+
+    expect(attachment.mime, 'image/png');
+    expect(attachment.byteSize, 64);
+    expect(attachment.blobId.value, hasLength(52));
+    expect(attachment.digest, startsWith('sha256:'));
+
+    final blobPath =
+        '${sandbox.path}${Platform.pathSeparator}vault'
+        '${Platform.pathSeparator}objects'
+        '${Platform.pathSeparator}${attachment.blobId.value.substring(0, 2)}'
+        '${Platform.pathSeparator}${attachment.blobId.value}';
+    expect(File(blobPath).existsSync(), isTrue);
+  });
 }
 
 final class _Session {

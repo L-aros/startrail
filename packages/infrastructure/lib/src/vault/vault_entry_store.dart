@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:domain/domain.dart';
 import 'package:sodium/sodium_sumo.dart';
 
@@ -163,6 +165,36 @@ final class VaultEntryStore implements EntryStore {
 
   void dispose() {
     _indexKey.dispose();
+  }
+
+  /// Encrypts and persists an attachment's raw bytes as an immutable blob
+  /// object, returning the attachment metadata that references it. The blob is
+  /// not yet linked to any entry; linking happens when the entry is saved.
+  Future<Attachment> importBlob({
+    required String mime,
+    required Uint8List bytes,
+  }) async {
+    if (bytes.isEmpty) {
+      throw ArgumentError.value(bytes.length, 'bytes', 'empty');
+    }
+    final ciphertext = _objectCrypto.encrypt(
+      plaintext: bytes,
+      masterKey: _masterKey,
+      vaultUuid: _vaultUuid,
+      type: VaultObjectType.blob,
+      schemaVersion: 1,
+    );
+    final blobId = objectIdFromCiphertext(ciphertext);
+    await _persistObject(blobId, ciphertext);
+    final digest =
+        'sha256:${base64Url.encode(sha256.convert(bytes).bytes).replaceAll('=', '')}';
+    return Attachment(
+      id: AttachmentId(_uuidV4()),
+      blobId: BlobId(blobId),
+      mime: mime,
+      byteSize: bytes.length,
+      digest: digest,
+    );
   }
 
   /// Encrypts and persists an entry/tombstone object, advances the manifest

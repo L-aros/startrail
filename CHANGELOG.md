@@ -27,6 +27,7 @@
 - 基础设施 VaultEntryStore：对象加密落盘、manifest 父链与 HEAD 原子替换、SQLCipher 索引 CRUD、时间线倒序查询、解锁后本地搜索。
 - VaultSession 会话封装与 isolate worker 扩展，支持解锁后条目 CRUD。
 - 解锁后时间线 UI：按事件时间倒序浏览、本地搜索、新建/编辑/删除条目、标签（逗号分隔）。
+- 附件导入：选择文件后加密为不可变 blob 对象落盘，条目内嵌附件元数据（mime、大小、digest）并支持移除。
 ### Changed
 ### Deprecated
 ### Removed

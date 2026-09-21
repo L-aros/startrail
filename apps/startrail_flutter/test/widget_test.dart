@@ -108,6 +108,10 @@ final class _FakeBackend implements VaultBackend {
 
   @override
   Future<BackendResult> tags() async => BackendResult.ok(const []);
+
+  @override
+  Future<BackendResult> importAttachment(String path, String mime) async =>
+      BackendResult.ok();
 }
 
 final class _FakePaths implements VaultPaths {
