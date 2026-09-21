@@ -27,6 +27,7 @@
 ### Removed
 ### Fixed
 - 修复 Windows runner 中文标题受本地代码页误解码，以及顶层 Flutter 构建未继承依赖包 SQLCipher hook、可能静默链接普通 SQLite 的问题。
+- 修复 Linux 目标编译 SQLCipher 时未链接 OpenSSL，导致 `libsqlite3.so` 保留未定义的 `RAND_bytes` 符号并在加载阶段失败的问题；Linux 分支现补齐 `crypto` 与 `m` 链接参数，符号闭包完整。
 ### Security
 - 忽略本地环境配置、私钥、签名材料、仓库内 Vault 目录与明文导出，避免其被意外提交。
 - 加密索引数据库、WAL、SHM 的 fixture 正文、raw key 与 key hex 泄漏扫描。
