@@ -20,7 +20,7 @@
 
 ## Milestone 2：条目、时间线、标签、搜索与附件
 
-状态：**进行中**（后端完成，Flutter UI 待接续）。
+状态：**Complete**（后端 + Flutter UI 全部落地并通过 CI）。
 
 已完成：
 
@@ -30,14 +30,30 @@
 - 应用层：EntryService 用例、标签规范化查重、稳定错误码映射。
 - 测试：领域/应用层单测通过；基础设施编解码与集成测试已编写（本地因 `reg.exe` 被安全策略黑名单阻止、无法编译 SQLCipher 原生库，待 CI 或解除黑名单后运行）。
 
+已落地：
+
+- Flutter 时间线、条目编辑器、标签、本地搜索、附件导入 UI；扩展 isolate worker 支持解锁后条目 CRUD。
+- 附件 blob 对象的导入/管理闭环。
+
+## Milestone 3：加密备份、隔离验证、导入与恢复
+
+状态：**进行中**（后端完成，Flutter UI 待接续）。
+
+已完成：
+
+- Accepted ADR-0017，固定备份容器格式（`STBKP`）、Backup Key 密钥层级、隔离验证与事务化恢复语义；决策点「单文件认证容器 / 仅干净目标+确认替换 / 与 Vault 同密码」经用户确认。
+- 格式层：`BackupHeaderCodec`（`STBKP` magic + canonical JSON + KDF 参数下限校验）、`BackupManifestCodec`（逐文件 `sha256` 清单 + 路径白名单）、容器字节布局。
+- 密码学层：`BackupCrypto`（BK 包装/解包 + manifest AEAD，AD 域名分离，复用 Argon2id + XChaCha20-Poly1305）。
+- `BackupCreator`/`BackupVerifier`/`BackupRestorer`：单文件认证容器、只读隔离验证（ok/wrong_password/tampered/corrupt/unsupported）、事务化恢复（完整验证→暂存提取→复验→原子交换，失败不改写目标）。
+- `IndexPopulator`：从已认证对象与 manifest 重建 `entries/tags/entry_tags/attachments`，替换 `VaultSession` 的 `populate` 空占位。
+- 领域层 `BackupStore` 端口与备份值对象、应用层 `BackupService` 用例与稳定 `BACKUP_*` 错误码。
+- 测试：codec 固定向量与路径白名单、crypto 往返与 AD 绑定、verifier 五种状态、creator→verify→restore 字节级往返与失败注入、含条目/附件的恢复后索引重建。
+
 待接续：
 
-- Flutter 时间线、条目编辑器、标签选择、本地搜索、附件导入 UI；扩展 isolate worker 支持解锁后条目 CRUD。
-- 附件 blob 对象的导入/管理闭环。
+- Flutter 备份/恢复 UI（导出备份、从备份恢复、验证报告展示）与 isolate worker 消息协议扩展。
 
 ## 后续 Milestone
 
-2. 条目 CRUD、时间线、标签、搜索与附件。
-3. 加密备份、隔离验证、导入与恢复。
 4. 显式启用的 R2 同步、冲突保留/解决与可取消重试。
 5. 签名更新、可选遥测、平台安全存储和发布门禁。

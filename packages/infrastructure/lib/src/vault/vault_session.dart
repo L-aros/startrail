@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:sodium/sodium_sumo.dart';
 
+import '../backup/index_populator.dart';
+import '../backup/vault_backup_store.dart';
 import '../format/head.dart';
 import '../format/manifest_codec.dart';
 import '../format/vault_header.dart';
@@ -17,11 +19,12 @@ import 'vault_unlocker.dart';
 /// successful authentication; it owns all sensitive state and must be
 /// [dispose]d when the session is locked.
 final class VaultSession {
-  VaultSession._(this.unlocked, this.index, this.entryStore);
+  VaultSession._(this.unlocked, this.index, this.entryStore, this.backupStore);
 
   final UnlockedVault unlocked;
   final EncryptedIndexDatabase index;
   final VaultEntryStore entryStore;
+  final VaultBackupStore backupStore;
 
   /// Unlocks [vault], verifies the manifest, opens (or rebuilds) the index and
   /// wires up the entry store. The current device id is taken from the manifest
@@ -49,9 +52,13 @@ final class VaultSession {
       '${vault.path}${separator}local${separator}index.db',
       masterKey: unlocked.masterKey,
       manifestId: head.manifest.manifestId,
-      populate: (_) {
-        // Index reconstruction from authenticated objects lands in Milestone 3.
-      },
+      populate: IndexPopulator(
+        sodium: sodium,
+        vaultUuid: uuidBytes(unlocked.vaultUuid),
+        masterKey: unlocked.masterKey,
+        manifest: manifest,
+        vault: vault,
+      ).populate,
     );
 
     final entryStore = VaultEntryStore(
@@ -67,7 +74,15 @@ final class VaultSession {
       clock: clock,
     );
 
-    return VaultSession._(unlocked, index, entryStore);
+    final backupStore = VaultBackupStore(
+      sodium: sodium,
+      durability: durability,
+      vault: vault,
+      vaultUuid: uuidBytes(unlocked.vaultUuid),
+      deviceId: manifest.writerDeviceId,
+    );
+
+    return VaultSession._(unlocked, index, entryStore, backupStore);
   }
 
   void dispose() {

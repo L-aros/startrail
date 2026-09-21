@@ -28,6 +28,12 @@
 - VaultSession 会话封装与 isolate worker 扩展，支持解锁后条目 CRUD。
 - 解锁后时间线 UI：按事件时间倒序浏览、本地搜索、新建/编辑/删除条目、标签（逗号分隔）。
 - 附件导入：选择文件后加密为不可变 blob 对象落盘，条目内嵌附件元数据（mime、大小、digest）并支持移除。
+- Accepted ADR-0017，定义加密备份容器（`STBKP`）、Backup Key 密钥层级、隔离验证与事务化恢复语义。
+- 备份容器格式：`STBKP` magic + canonical JSON 备份 header/manifest，逐文件 `sha256` 完整性清单，字节级保留 Vault 权威文件。
+- BackupCrypto：Backup Key 包装/解包（AD=`startrail/backup-key/v1`）与 manifest AEAD（AD=`startrail/backup-manifest/v1`），复用 Argon2id + XChaCha20-Poly1305。
+- BackupCreator/BackupVerifier/BackupRestorer：单文件认证容器、只读隔离验证（ok/wrong_password/tampered/corrupt/unsupported）、事务化恢复（完整验证→暂存提取→复验→原子交换目标）。
+- IndexPopulator：从已认证对象与当前 manifest 重建 `entries/tags/entry_tags/attachments`，替换 `VaultSession` 的 `populate` 空占位，落地 ADR-0011/0016 的索引可重建不变量。
+- 领域层 `BackupStore` 端口与备份值对象（`BackupSummary`/`BackupVerificationReport`）、应用层 `BackupService` 用例与稳定 `BACKUP_*` 错误码。
 ### Changed
 ### Deprecated
 ### Removed
@@ -40,6 +46,7 @@
 - 增加 Argon2id KEK 派生及 XChaCha20-Poly1305 对象加解密、AD 绑定和篡改失败测试。
 - 增加 Vault 解锁事务、manifest v1 严格格式门禁、敏感 session 清零及错误密码/篡改回归测试。
 - 增加 100 个独立密文对象往返压测及 Android/Windows 发布产物 SQLCipher 符号门禁。
+- 备份容器不二次加密（用户数据机密性仍由 VMK 保证），Backup Key 与 manifest 的 AD 域名分离，恢复强制 KDF 参数下限，错误密码/篡改/恢复失败均不改写目标 Vault。
 
 ## [0.0.0] - YYYY-MM-DD
 

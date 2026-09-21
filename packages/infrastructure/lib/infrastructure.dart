@@ -1,8 +1,18 @@
 library;
 
+export 'src/backup/backup_container.dart';
+export 'src/backup/backup_creator.dart';
+export 'src/backup/backup_crypto.dart';
+export 'src/backup/backup_opener.dart';
+export 'src/backup/backup_restorer.dart';
+export 'src/backup/backup_verifier.dart';
+export 'src/backup/index_populator.dart';
+export 'src/backup/vault_backup_store.dart';
 export 'src/crypto/password_kdf.dart';
 export 'src/crypto/vault_key_wrapper.dart';
 export 'src/crypto/vault_object_crypto.dart';
+export 'src/format/backup_header.dart';
+export 'src/format/backup_manifest.dart';
 export 'src/format/canonical_json.dart';
 export 'src/format/entry_object.dart';
 export 'src/format/head.dart';
