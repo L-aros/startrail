@@ -162,6 +162,21 @@ void main() {
     final tags = await session.store.listTags();
     expect(tags.map((t) => t.name), contains('旅行'));
   });
+
+  test('advances index generation together with the manifest', () async {
+    final session = await openSession();
+    addTearDown(session.dispose);
+
+    final before = session.store.manifestId;
+    await session.store.createEntry(draft('一条记录'));
+    final after = session.store.manifestId;
+    expect(after, isNot(before));
+
+    final rows = session.index.database.select(
+      'SELECT manifest_id FROM index_meta WHERE singleton = 1',
+    );
+    expect(rows.single['manifest_id'], after);
+  });
 }
 
 final class _Session {

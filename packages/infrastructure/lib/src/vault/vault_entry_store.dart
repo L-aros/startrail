@@ -307,6 +307,10 @@ final class VaultEntryStore implements EntryStore {
     database.execute('BEGIN IMMEDIATE');
     try {
       database.execute(
+        'UPDATE index_meta SET manifest_id = ? WHERE singleton = 1',
+        [_manifestId],
+      );
+      database.execute(
         'INSERT INTO entries '
         '(id, revision, occurred_at, updated_at, status, search_ciphertext) '
         'VALUES (?, ?, ?, ?, ?, ?) '
