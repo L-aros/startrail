@@ -48,6 +48,10 @@ sealed class SqliteBinary {
         );
         final useBundledOpenSsl =
             targetOS == OS.android || targetOS == OS.windows;
+        // Linux links the distribution OpenSSL 3 ABI instead of the pinned
+        // static build, so it needs the link flags but no header directory.
+        // See third_party/sqlcipher/BUILD_PROVENANCE.md.
+        final usesSystemOpenSsl = targetOS == OS.linux;
         final bundledOpenSslDirectory =
             bundledOpenSslRoot == null || !useBundledOpenSsl
             ? null
@@ -80,6 +84,12 @@ sealed class SqliteBinary {
                 ?.cast<String>()),
             if (bundledOpenSslDirectory != null)
               targetOS == OS.windows ? 'libcrypto' : 'crypto',
+            // Without libcrypto the produced libsqlite3.so keeps `RAND_bytes`
+            // and every other OpenSSL symbol undefined: shared libraries are
+            // allowed to link with unresolved symbols and only fail when the
+            // library is dlopen'ed. libm carries the
+            // SQLITE_ENABLE_MATH_FUNCTIONS entry points on glibc.
+            if (usesSystemOpenSsl) ...['crypto', 'm'],
             if (bundledOpenSslDirectory != null && targetOS == OS.windows) ...[
               'ws2_32',
               'gdi32',

@@ -11,7 +11,14 @@ The vendored version is `3.3.4+startrail.1`. Intentional differences are:
 - add `sqlite3_key_v2` to the generated native binding and Linux export list;
 - expose `Database.applySqlCipherRawKey(Uint8List)` only on the FFI API;
 - allocate a native key copy, overwrite it on success or exception, then free it;
-- add tests proving the temporary native copy is cleared on both paths.
+- add tests proving the temporary native copy is cleared on both paths;
+- accept a `startrail_bundled_openssl_root` user define and link the bundled
+  static OpenSSL when compiling for Android or Windows;
+- link the distribution OpenSSL 3 (`crypto`) and `m` when compiling for Linux,
+  so the produced `libsqlite3.so` has no unresolved OpenSSL symbol and can be
+  loaded. Shared libraries accept unresolved symbols at link time, which is why
+  the missing `-lcrypto` only surfaced as `undefined symbol: RAND_bytes` inside
+  `dlopen`.
 
 No passphrase or SQL-string key API is added. Regenerate/rebase only against the
 recorded upstream release, then review the complete diff before changing the

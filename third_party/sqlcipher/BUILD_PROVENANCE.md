@@ -25,6 +25,12 @@ The compile definitions match sqlite3.dart tag `sqlite3-3.3.4`:
 - `SQLITE_ENABLE_MEMORY_MANAGEMENT`
 
 The build must link OpenSSL 3.6.2 `libcrypto`, export `sqlite3_key_v2`, and must
-not export `sqlite3_rekey_v2`. WSL/Linux x64 currently builds against the
-system OpenSSL 3 ABI; Android and Windows use static libraries produced from
-the pinned archive before their release gates are considered satisfied.
+not export `sqlite3_rekey_v2`. Android and Windows use static libraries
+produced from the pinned archive before their release gates are considered
+satisfied.
+
+WSL/Linux x64 currently builds against the system OpenSSL 3 ABI, so its only
+platform-specific inputs are the link flags `crypto` and `m`. As required by
+ADR-0013, that difference is limited to the OpenSSL library path and the
+necessary link flags, and it is not yet ABI-pinned to the recorded OpenSSL
+3.6.2 archive; pinning Linux as well remains an open item for the release gate.
