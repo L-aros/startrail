@@ -22,6 +22,9 @@
 - WSL 原生构建路径和 SQLCipher 运行时身份验证测试。
 - 临时文件 flush、原子替换、回滚恢复协调器及 POSIX/Windows 目录持久化 adapter。
 - 创建、打开、错误密码、锁定 UI 与 Android/Windows 正式中文品牌。
+- Accepted ADR-0016，并实现条目对象协议（entry/tombstone payload v1）、标签/附件内嵌、manifest 更新事务、加密搜索（search_ciphertext 与标签密文列）。
+- 领域层 Entry/Tag/Attachment 值对象与 EntryStore 端口、应用层 EntryService 用例与稳定错误码映射。
+- 基础设施 VaultEntryStore：对象加密落盘、manifest 父链与 HEAD 原子替换、SQLCipher 索引 CRUD、时间线倒序查询、解锁后本地搜索。
 ### Changed
 ### Deprecated
 ### Removed

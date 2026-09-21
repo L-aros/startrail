@@ -18,6 +18,23 @@
 
 里程碑验收是 docs/quality/ACCEPTANCE.md 第 1、2、3 项中与离线 Vault 相关的部分：可创建/重启/锁定/解锁，错误密码、篡改和未知格式硬失败，写入中断不产生已确认数据丢失。“100 条与附件”的条目业务操作属于 Milestone 2，但 Milestone 1 会先用协议级测试对等量的加密对象进行压测。
 
+## Milestone 2：条目、时间线、标签、搜索与附件
+
+状态：**进行中**（后端完成，Flutter UI 待接续）。
+
+已完成：
+
+- Accepted ADR-0016，固定 entry/tombstone 对象 payload v1、标签/附件内嵌策略、manifest 更新事务与崩溃恢复、加密搜索方案。
+- 领域层：Entry/Tag/Attachment/EntryDraft 值对象与校验规则、EntryStore 端口、EntryNotFound/EntryRevisionConflict 领域异常。
+- 基础设施：object_id、EntryObjectCodec、ManifestV1Codec、SearchCipher、VaultEntryStore（对象加密落盘 → manifest 父链 → HEAD 原子替换 → 索引单事务更新）。
+- 应用层：EntryService 用例、标签规范化查重、稳定错误码映射。
+- 测试：领域/应用层单测通过；基础设施编解码与集成测试已编写（本地因 `reg.exe` 被安全策略黑名单阻止、无法编译 SQLCipher 原生库，待 CI 或解除黑名单后运行）。
+
+待接续：
+
+- Flutter 时间线、条目编辑器、标签选择、本地搜索、附件导入 UI；扩展 isolate worker 支持解锁后条目 CRUD。
+- 附件 blob 对象的导入/管理闭环。
+
 ## 后续 Milestone
 
 2. 条目 CRUD、时间线、标签、搜索与附件。
