@@ -101,18 +101,23 @@ void main() {
   });
 
   test('rejects unknown payload field', () {
-    final bytes = codec.encodeEntry(
-      id: entryId,
-      revision: 1,
-      deviceId: deviceId,
-      createdAt: createdAt,
-      draft: draft(),
-    );
-    final text = String.fromCharCodes(
-      bytes,
-    ).replaceFirst('"body"', '"extra","body"');
+    final bytes = encodeCanonicalJson({
+      'kind': 'entry',
+      'id': entryId,
+      'revision': 1,
+      'device_id': deviceId,
+      'created_at': '2026-09-21T12:34:56.789Z',
+      'payload': {
+        'body': '今天去了海边',
+        'occurred_at': '2026-09-20T08:30:00.000Z',
+        'mood': null,
+        'tags': <Object?>[],
+        'attachments': <Object?>[],
+        'extra': true,
+      },
+    });
     expect(
-      () => codec.decode(Uint8List.fromList(text.codeUnits)),
+      () => codec.decode(bytes),
       throwsA(isA<UnsupportedVaultFormatFailure>()),
     );
   });
