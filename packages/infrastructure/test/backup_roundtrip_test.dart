@@ -202,19 +202,9 @@ Future<void> _expectVaultFilesEqual(Directory a, Directory b) async {
   for (final sub in ['objects', 'manifests']) {
     final dirA = Directory('${a.path}$separator$sub');
     final dirB = Directory('${b.path}$separator$sub');
-    final namesA = <String>[];
-    if (await dirA.exists()) {
-      await for (final entity in dirA.list(recursive: true)) {
-        if (entity is File) namesA.add(entity.uri.pathSegments.join('/'));
-      }
-    }
-    final namesB = <String>[];
-    if (await dirB.exists()) {
-      await for (final entity in dirB.list(recursive: true)) {
-        if (entity is File) namesB.add(entity.uri.pathSegments.join('/'));
-      }
-    }
-    expect(namesA..sort(), namesB..sort(), reason: sub);
+    final namesA = await _relativeFilePaths(dirA);
+    final namesB = await _relativeFilePaths(dirB);
+    expect(namesA, namesB, reason: sub);
     for (final name in namesA) {
       final fa = File(
         '${dirA.path}$separator${name.replaceAll('/', separator)}',
@@ -229,4 +219,19 @@ Future<void> _expectVaultFilesEqual(Directory a, Directory b) async {
       );
     }
   }
+}
+
+Future<List<String>> _relativeFilePaths(Directory dir) async {
+  final result = <String>[];
+  if (!await dir.exists()) return result;
+  final prefix = dir.path;
+  await for (final entity in dir.list(recursive: true)) {
+    if (entity is File) {
+      result.add(
+        entity.path.substring(prefix.length + 1).replaceAll('\\', '/'),
+      );
+    }
+  }
+  result.sort();
+  return result;
 }
